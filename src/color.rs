@@ -4,6 +4,7 @@ use std::io::{Result, Write};
 #[derive(Copy, Clone)]
 pub struct Color(pub Vector3<f64>);
 
+/// Writes the pixel color to `out`.
 pub fn write_color(mut out: impl Write, pixel: &Color) -> Result<()> {
     let r = pixel.0.x;
     let g = pixel.0.y;
