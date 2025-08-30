@@ -1,6 +1,11 @@
 use indicatif::ProgressIterator;
 //use log::info;
 
+use std::io;
+
+use rayt_rs::color::{Color, write_color};
+use rayt_rs::na::Vector3;
+
 fn main() {
     env_logger::init();
 
@@ -18,15 +23,8 @@ fn main() {
 
     for j in (0..image_height).progress() {
         for i in 0..image_width {
-            let r = i as f64 * scale_x;
-            let g = j as f64 * scale_y;
-            let b = 0.0;
-
-            let ir = (255.999 * r) as u8;
-            let ig = (255.999 * g) as u8;
-            let ib = (255.999 * b) as u8;
-
-            println!("{ir} {ig} {ib}")
+            let pixel_color = Color(Vector3::new(j as f64 * scale_x, i as f64 * scale_y, 0.0));
+            write_color(io::stdout(), &pixel_color).expect("Failed Write");
         }
     }
 }
