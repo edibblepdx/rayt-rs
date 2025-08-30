@@ -1,5 +1,4 @@
-pub type UnitVec3 = na::Unit<na::Vector3<f64>>;
-pub type Point3 = na::Point3<f64>;
+use crate::types::{Point3, UnitVec3, Vec3};
 
 #[derive(Copy, Clone)]
 pub struct Ray {
@@ -27,7 +26,7 @@ impl Ray {
     }
 
     /// Returns an immutable reference to the direction of the ray as an [`na::Vector3`].
-    pub fn direction_vec(&self) -> &na::Vector3<f64> {
+    pub fn direction_vec(&self) -> &Vec3 {
         self.direction.as_ref()
     }
 

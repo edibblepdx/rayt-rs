@@ -1,8 +1,9 @@
-use na::Vector3;
 use std::io::{Result, Write};
 
+use crate::types::Vec3;
+
 #[derive(Copy, Clone)]
-pub struct Color(pub Vector3<f64>);
+pub struct Color(pub Vec3);
 
 /// Writes the pixel color to `out`.
 pub fn write_color(mut out: impl Write, pixel: &Color) -> Result<()> {
