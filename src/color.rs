@@ -1,6 +1,7 @@
 use na::Vector3;
 use std::io::{Result, Write};
 
+#[derive(Copy, Clone)]
 pub struct Color(pub Vector3<f64>);
 
 pub fn write_color(mut out: impl Write, pixel: &Color) -> Result<()> {
