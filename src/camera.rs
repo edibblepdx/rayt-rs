@@ -1,4 +1,4 @@
-use crate::types::{Point3, UnitVec3, Vec3};
+use crate::math::types::{Point3, UnitVec3, Vec3};
 
 pub struct Camera {
     pub eye: Point3,

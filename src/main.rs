@@ -3,8 +3,8 @@ use indicatif::ProgressIterator;
 
 use std::io;
 
+use rayt_rs::math::types::*;
 use rayt_rs::na::{point, vector};
-use rayt_rs::types::*;
 use rayt_rs::{
     camera::Camera,
     color::{Color, write_color},
@@ -77,6 +77,10 @@ fn main() {
 }
 
 fn ray_color(ray: &Ray) -> Color {
+    if hit_sphere(&point![0.0, 0.0, -1.0], 0.5, ray) {
+        return Color(vector![1.0, 0.0, 0.0]);
+    }
+
     let mut t = ray.direction().y;
     t = (t + 1.0) / 2.0;
 
@@ -84,4 +88,13 @@ fn ray_color(ray: &Ray) -> Color {
     let end = Color(vector![0.5, 0.7, 1.0]);
 
     Color((1.0 - t) * start.0 + t * end.0)
+}
+
+fn hit_sphere(center: &Point3, radius: f64, ray: &Ray) -> bool {
+    let oc = center - ray.origin();
+    let a = ray.direction().dot(ray.direction());
+    let b = -2.0 * ray.direction().dot(&oc);
+    let c = oc.dot(&oc) - radius.powf(2.0);
+    let discriminant = b.powf(2.0) - 4.0 * a * c;
+    discriminant >= 0.0
 }

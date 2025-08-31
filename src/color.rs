@@ -1,6 +1,6 @@
 use std::io::{Result, Write};
 
-use crate::types::Vec3;
+use crate::math::types::Vec3;
 
 #[derive(Copy, Clone)]
 pub struct Color(pub Vec3);
