@@ -4,9 +4,11 @@ use indicatif::ProgressIterator;
 use std::io;
 
 use rayt_rs::na::{point, vector};
+use rayt_rs::types::*;
 use rayt_rs::{
     camera::Camera,
     color::{Color, write_color},
+    ray::Ray,
 };
 
 const ASPECT_RATIO: f64 = 16.0 / 9.0;
@@ -14,42 +16,72 @@ const ASPECT_RATIO: f64 = 16.0 / 9.0;
 fn main() {
     env_logger::init();
 
-    // Camera
+    // Image
+    // -----
 
+    // Image dimensions are integer-valued.
     let image_width: u32 = 400;
     let mut image_height: u32 = (image_width as f64 / ASPECT_RATIO) as u32;
     image_height = if image_height < 1 { 1 } else { image_height };
 
-    let viewport_height = 2.0;
+    // Camera
+    // ------
+
+    // Distance from the eye to the image plane.
+    let focal_length = 1.0;
+
+    // Viewport dimensions are real-valued.
+    // The actual aspect ratio may not be ASPECT_RATIO.
+    let viewport_height = 2.0; // arbitrary
     let viewport_width = viewport_height * image_width as f64 / image_height as f64;
 
-    let focal_length = 10.0;
+    let eye = vector![0.0, 0.0, 0.0];
 
+    /*
     let camera = Camera::new(
         point![0.0, 0.0, 0.0],  // eye
-        vector![0.0, 1.0, 0.0], //up
-        vector![1.0, 0.0, 0.0], //right
+        vector![0.0, 1.0, 0.0], // up
+        vector![1.0, 0.0, 0.0], // right
         viewport_width,
         viewport_height,
         focal_length,
     );
+    */
 
-    // Image
+    let viewport_u = vector![viewport_width, 0.0, 0.0];
+    let viewport_v = vector![0.0, -viewport_height, 0.0];
 
-    let image_width: usize = 256;
-    let image_height: usize = 256;
+    let pixel_delta_u = viewport_u / image_width as f64;
+    let pixel_delta_v = viewport_v / image_height as f64;
 
-    let scale_x = 1.0 / (image_width - 1) as f64;
-    let scale_y = 1.0 / (image_height - 1) as f64;
+    let viewport_upper_left =
+        eye - vector![viewport_width / 2.0, -viewport_height / 2.0, focal_length];
+    let pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
     // Render
+    // ------
 
     println!("P3\n{image_width} {image_height}\n255");
 
     for j in (0..image_height).progress() {
         for i in 0..image_width {
-            let pixel_color = Color(vector![j as f64 * scale_x, i as f64 * scale_y, 0.0]);
+            let pixel_center =
+                pixel00_loc + (i as f64 * pixel_delta_u) + (j as f64 * pixel_delta_v);
+            let ray_direction = UnitVec3::new_normalize(pixel_center - eye);
+            let r = Ray::new(eye, ray_direction);
+
+            let pixel_color = ray_color(&r);
             write_color(io::stdout(), &pixel_color).expect("Failed Write");
         }
     }
+}
+
+fn ray_color(ray: &Ray) -> Color {
+    let mut t = ray.direction().y;
+    t = (t + 1.0) / 2.0;
+
+    let start = Color(vector![1.0, 1.0, 1.0]);
+    let end = Color(vector![0.5, 0.7, 1.0]);
+
+    Color((1.0 - t) * start.0 + t * end.0)
 }

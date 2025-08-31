@@ -1,13 +1,13 @@
 use crate::types::{Point3, UnitVec3, Vec3};
 
 pub struct Camera {
-    eye: Point3,
-    up: UnitVec3,
-    right: UnitVec3,
-    forward: UnitVec3,
-    viewport_width: f64,
-    viewport_height: f64,
-    focal_length: f64,
+    pub eye: Point3,
+    pub up: UnitVec3,
+    pub right: UnitVec3,
+    pub forward: UnitVec3,
+    pub viewport_width: f64,
+    pub viewport_height: f64,
+    pub focal_length: f64,
 }
 
 impl Camera {
