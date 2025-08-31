@@ -98,10 +98,11 @@ fn ray_color(ray: &Ray) -> Color {
 
 fn hit_sphere(center: &Point3, radius: f64, ray: &Ray) -> Option<f64> {
     let oc = center - ray.origin();
-    let a = ray.direction().dot(ray.direction());
-    let b = -2.0 * ray.direction().dot(&oc);
+    let a = ray.direction().norm_squared();
+    // let b = -2h
+    let h = ray.direction().dot(&oc);
     let c = oc.dot(&oc) - radius * radius;
-    let discriminant = b * b - 4.0 * a * c;
+    let discriminant = h * h - a * c;
 
     if discriminant < 0.0 {
         // no real roots
@@ -110,6 +111,6 @@ fn hit_sphere(center: &Point3, radius: f64, ray: &Ray) -> Option<f64> {
         // both roots are positive if we assume the sphere
         // is in front of the camera. For now we just want
         // the smallest root.
-        Some((-b - discriminant.sqrt()) / (2.0 * a))
+        Some((h - discriminant.sqrt()) / a)
     }
 }
