@@ -1,4 +1,4 @@
-use crate::math::types::Point3;
+use crate::math::types::{Point3, UnitVec3};
 use crate::{
     math::{
         hittable::{HitRecord, Hittable},
@@ -44,7 +44,7 @@ impl Hittable for Sphere {
             .find(|&root| (t_min..=t_max).contains(&root))?;
 
         let point = Point3::from((ray.at(t) - self.center) / self.radius);
-        let normal = point - self.center / self.radius;
+        let normal = UnitVec3::new_unchecked(point - self.center / self.radius);
 
         Some(HitRecord { t, point, normal })
     }
