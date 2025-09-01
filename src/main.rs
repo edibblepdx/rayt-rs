@@ -8,7 +8,10 @@ use rayt_rs::na::{point, vector};
 use rayt_rs::{
     camera::Camera,
     color::{Color, write_color},
-    math::{Hittable, primitives::Sphere},
+    math::{
+        hittable::{Hittable, HittableList},
+        primitives::Sphere,
+    },
     ray::Ray,
 };
 
@@ -24,6 +27,12 @@ fn main() {
     let image_width: u32 = 400;
     let mut image_height: u32 = (image_width as f64 / ASPECT_RATIO) as u32;
     image_height = if image_height < 1 { 1 } else { image_height };
+
+    // World
+    // -----
+    let mut world = HittableList::default();
+    world.add(Sphere::new(point![0.0, 0.0, -1.0], 0.5));
+    world.add(Sphere::new(point![0.0, -100.5, -1.0], 100.0));
 
     // Camera
     // ------
@@ -71,18 +80,14 @@ fn main() {
             let ray_direction = UnitVec3::new_normalize(pixel_center - eye);
             let r = Ray::new(eye, ray_direction);
 
-            let pixel_color = ray_color(&r);
+            let pixel_color = ray_color(&r, &world);
             write_color(io::stdout(), &pixel_color).expect("Failed Write");
         }
     }
 }
 
-fn ray_color(ray: &Ray) -> Color {
-    let center = point![0.0, 0.0, -1.0];
-    let radius = 0.5;
-    let sphere = Sphere::new(center, radius);
-
-    if let Some(record) = sphere.hit(ray, 0.0, 10.0) {
+fn ray_color(ray: &Ray, world: &HittableList) -> Color {
+    if let Some(record) = world.hit(ray, 0.0, 10.0) {
         let mapped = record.normal.map(|e| (e + 1.0) / 2.0);
         return Color(mapped);
     }

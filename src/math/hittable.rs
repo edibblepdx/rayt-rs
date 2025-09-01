@@ -3,9 +3,11 @@
 use crate::math::types::{Point3, UnitVec3};
 use crate::ray::Ray;
 
+#[derive(Default)]
 pub enum FrontFace {
-    Inside,
+    #[default]
     Outside,
+    Inside,
 }
 
 pub struct HitRecord {
@@ -40,4 +42,30 @@ impl HitRecord {
 /// Allows a type to be tested for ray intersections.
 pub trait Hittable: Sync {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
+}
+
+#[derive(Default)]
+pub struct HittableList {
+    pub objects: Vec<Box<dyn Hittable>>,
+}
+
+impl HittableList {
+    pub fn add<T: Hittable + 'static>(&mut self, o: T) {
+        self.objects.push(Box::new(o))
+    }
+}
+
+impl Hittable for HittableList {
+    /// Iterate through all hittable objects to find the closest hit.
+    fn hit(&self, ray: &Ray, t_min: f64, mut t_max: f64) -> Option<HitRecord> {
+        let mut record = None;
+        for o in &self.objects {
+            record = o.hit(ray, t_min, t_max).map_or(record, |r| {
+                t_max = r.t;
+                Some(r)
+            })
+        }
+
+        record
+    }
 }
