@@ -1,4 +1,8 @@
-pub mod sphere;
+//! Primitives module.
 
-/// A marker trait for primitives.
+mod sphere;
+
+pub use sphere::Sphere;
+
+/// A marker trait for geometric primitives.
 pub trait Primitive {}

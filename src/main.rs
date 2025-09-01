@@ -8,6 +8,7 @@ use rayt_rs::na::{point, vector};
 use rayt_rs::{
     camera::Camera,
     color::{Color, write_color},
+    math::{Hittable, primitives::Sphere},
     ray::Ray,
 };
 
@@ -79,11 +80,10 @@ fn main() {
 fn ray_color(ray: &Ray) -> Color {
     let center = point![0.0, 0.0, -1.0];
     let radius = 0.5;
-    if let Some(t) = hit_sphere(&center, radius, ray) {
-        let n = (ray.at(t) - center) / radius;
-        // remap normal from [-1, 1] to [0, 1]
-        let mapped = n.map(|e| (e + 1.0) / 2.0);
+    let sphere = Sphere::new(center, radius);
 
+    if let Some(record) = sphere.hit(ray, 0.0, 10.0) {
+        let mapped = record.normal.map(|e| (e + 1.0) / 2.0);
         return Color(mapped);
     }
 
@@ -94,23 +94,4 @@ fn ray_color(ray: &Ray) -> Color {
     let end = Color(vector![0.5, 0.7, 1.0]);
 
     Color((1.0 - t) * start.0 + t * end.0)
-}
-
-fn hit_sphere(center: &Point3, radius: f64, ray: &Ray) -> Option<f64> {
-    let oc = center - ray.origin();
-    let a = ray.direction().norm_squared();
-    // let b = -2h
-    let h = ray.direction().dot(&oc);
-    let c = oc.dot(&oc) - radius * radius;
-    let discriminant = h * h - a * c;
-
-    if discriminant < 0.0 {
-        // no real roots
-        None
-    } else {
-        // both roots are positive if we assume the sphere
-        // is in front of the camera. For now we just want
-        // the smallest root.
-        Some((h - discriminant.sqrt()) / a)
-    }
 }
