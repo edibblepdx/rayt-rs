@@ -43,9 +43,9 @@ impl Hittable for Sphere {
             .into_iter()
             .find(|&root| (t_min..=t_max).contains(&root))?;
 
-        let point = Point3::from((ray.at(t) - self.center) / self.radius);
-        let normal = UnitVec3::new_unchecked(point - self.center / self.radius);
+        let hit_point = Point3::from((ray.at(t) - self.center) / self.radius);
+        let outward_normal = UnitVec3::new_unchecked(hit_point - self.center / self.radius);
 
-        Some(HitRecord { t, point, normal })
+        Some(HitRecord::new(ray, t, hit_point, outward_normal))
     }
 }
