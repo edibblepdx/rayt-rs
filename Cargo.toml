@@ -2,6 +2,7 @@
 name = "rayt-rs"
 version = "0.1.0"
 edition = "2024"
+publish = false
 
 [dependencies]
 env_logger = "0.11.8"
