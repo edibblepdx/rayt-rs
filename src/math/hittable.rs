@@ -40,17 +40,20 @@ impl HitRecord {
 }
 
 /// Allows a type to be tested for ray intersections.
-pub trait Hittable: Sync {
+pub trait Hittable {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
 }
 
 #[derive(Default)]
 pub struct HittableList {
-    pub objects: Vec<Box<dyn Hittable>>,
+    pub objects: Vec<Box<dyn Hittable + Send + Sync>>,
 }
 
 impl HittableList {
-    pub fn add<T: Hittable + 'static>(&mut self, o: T) {
+    pub fn add<T>(&mut self, o: T)
+    where
+        T: Hittable + Send + Sync + 'static,
+    {
         self.objects.push(Box::new(o))
     }
 }

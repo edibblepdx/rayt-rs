@@ -1,3 +1,25 @@
+// Assign threads jobs by scan line.
+//
+// possibly have to move file pointer offset for each write.
+// This should still be faster than single threaded math.
+//
+// Can either have a queue in the main thread or a shared
+// file descriptor within a mutex.
+//
+// Maybe implement a writer class or trait with several* image
+// formats. I'll probably just stick to ppm though to be honest.
+// But the ImageWriter trait could have a write(x, Some(offset))
+// method. And it should have a mutex possibly. Then implement
+// ImageWriter for formats/ppm.rs or something. That leaves it
+// open for future image types even though I'll likely never
+// actually implement them. Maybe I could implement std::io::Write
+//
+// I could have a ppm struct with a file descriptor mutex and
+// implement the Write trait. I have no idea what flush does.
+// And am not sure how to handle the offset. Maybe just a method
+// on the struct? I need to be careful not to lock, move the
+// pointer, and unlock without writing though.
+
 extern crate num_cpus;
 
 use std::{
@@ -25,17 +47,17 @@ impl ThreadPool {
     pub fn new(size: usize) -> ThreadPool {
         assert!(size > 0, "nthreads must be greater than zero");
 
-        let (sender, receiver) = mpsc::channel();
-        let receiver = Arc::new(Mutex::new(receiver));
+        let (tx, rx) = mpsc::channel();
+        let rx = Arc::new(Mutex::new(rx));
         let mut workers = Vec::with_capacity(size);
 
         for id in 0..size {
-            workers.push(Worker::new(id, receiver.clone()));
+            workers.push(Worker::new(id, rx.clone()));
         }
 
         ThreadPool {
             workers,
-            sender: Some(sender),
+            sender: Some(tx),
         }
     }
 
