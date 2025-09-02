@@ -1,4 +1,4 @@
-use crate::math::types::{Point3, UnitVec3, Vec3};
+use crate::math::types::{Point3, UnitVec3};
 
 #[derive(Copy, Clone)]
 pub struct Ray {
@@ -15,19 +15,14 @@ impl Ray {
         }
     }
 
-    /// Returns an immutable reference to the origin of the ray.
-    pub fn origin(&self) -> &Point3 {
-        &self.origin
+    /// Returns the origin of the ray.
+    pub fn origin(&self) -> Point3 {
+        self.origin
     }
 
-    /// Returns an immutable reference to the direction of the ray.
-    pub fn direction(&self) -> &UnitVec3 {
-        &self.direction
-    }
-
-    /// Returns an immutable reference to the direction of the ray as an [`na::Vector3`].
-    pub fn direction_vec(&self) -> &Vec3 {
-        self.direction.as_ref()
+    /// Returns the direction of the ray.
+    pub fn direction(&self) -> UnitVec3 {
+        self.direction
     }
 
     /// Returns a point along the ray.

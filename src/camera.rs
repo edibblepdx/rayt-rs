@@ -24,7 +24,7 @@ impl Camera {
     ) -> Self {
         let up = UnitVec3::new_normalize(up);
         let right = UnitVec3::new_normalize(right);
-        let forward = UnitVec3::new_normalize(right.cross(&up));
+        let forward = UnitVec3::new_normalize(right.cross(*up));
 
         Camera {
             eye: eye.into(),

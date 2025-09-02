@@ -24,7 +24,7 @@ pub struct HitRecord {
 impl HitRecord {
     /// Constructs a new `HitRecord`.
     pub fn new(ray: &Ray, t: f64, hit_point: Point3, outward_normal: UnitVec3) -> Self {
-        let (front_face, normal) = if ray.direction().dot(&outward_normal) < 0.0 {
+        let (front_face, normal) = if ray.direction().dot(*outward_normal) < 0.0 {
             (FrontFace::Outside, outward_normal)
         } else {
             (FrontFace::Inside, -outward_normal)

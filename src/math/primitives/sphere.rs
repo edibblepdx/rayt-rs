@@ -29,9 +29,9 @@ impl Hittable for Sphere {
         let (r_origin, r_direction) = (ray.origin(), ray.direction());
 
         let oc = self.center - r_origin;
-        let a = r_direction.norm_squared();
-        let h = r_direction.dot(&oc); // let b = -2h
-        let c = oc.norm_squared() - self.radius.powi(2);
+        let a = r_direction.length_squared();
+        let h = r_direction.dot(oc); // let b = -2h
+        let c = oc.length_squared() - self.radius.powi(2);
 
         let discriminant = h * h - a * c;
         if discriminant < 0.0 {
@@ -39,12 +39,14 @@ impl Hittable for Sphere {
         }
 
         let sqrtd = discriminant.sqrt();
-        let t = [(h - sqrtd) / 2.0, (h + sqrtd) / 2.0]
+        let t = [(h - sqrtd) / a, (h + sqrtd) / a]
             .into_iter()
             .find(|&root| (t_min..=t_max).contains(&root))?;
 
-        let hit_point = Point3::from((ray.at(t) - self.center) / self.radius);
-        let outward_normal = UnitVec3::new_unchecked(hit_point - self.center / self.radius);
+        let hit_point = ray.at(t);
+        let outward_normal = UnitVec3::new_unchecked((hit_point - self.center) / self.radius);
+
+        eprintln!("{}", outward_normal.length());
 
         Some(HitRecord::new(ray, t, hit_point, outward_normal))
     }
