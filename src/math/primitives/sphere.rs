@@ -38,10 +38,15 @@ impl Hittable for Sphere {
             return None;
         }
 
+        // Find smallest root in range.
         let sqrtd = discriminant.sqrt();
-        let t = [(h - sqrtd) / a, (h + sqrtd) / a]
-            .into_iter()
-            .find(|&root| (t_min..=t_max).contains(&root))?;
+        let mut t = (h - sqrtd) / a;
+        if !(t_min..=t_max).contains(&t) {
+            t = (h + sqrtd) / a;
+            if !(t_min..=t_max).contains(&t) {
+                return None;
+            }
+        }
 
         let hit_point = ray.at(t);
         let outward_normal = UnitVec3::new_unchecked((hit_point - self.center) / self.radius);

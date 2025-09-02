@@ -91,6 +91,7 @@ fn main() {
     .progress_chars("#>-");
 
     log::info!("Generating Image");
+
     pixels
         .par_chunks_mut(image_width)
         .progress_with_style(ps.clone())
@@ -108,6 +109,7 @@ fn main() {
         });
 
     log::info!("Writing Image");
+
     let mut out = io::BufWriter::new(io::stdout());
     for pixel_color in pixels.iter().progress_with_style(ps.clone()) {
         write_color(&mut out, &pixel_color).expect("Failed Write");
