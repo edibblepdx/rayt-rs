@@ -23,7 +23,7 @@ fn main() {
     // -----
 
     // Image dimensions are integer-valued.
-    let image_width: u32 = 800;
+    let image_width: u32 = 400;
     let mut image_height: u32 = (image_width as f64 / ASPECT_RATIO) as u32;
     image_height = if image_height < 1 { 1 } else { image_height };
 

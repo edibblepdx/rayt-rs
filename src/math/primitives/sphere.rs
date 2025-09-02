@@ -7,7 +7,7 @@ use crate::{
     ray::Ray,
 };
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, serde::Deserialize)]
 pub struct Sphere {
     center: Point3,
     radius: f64,
@@ -46,8 +46,35 @@ impl Hittable for Sphere {
         let hit_point = ray.at(t);
         let outward_normal = UnitVec3::new_unchecked((hit_point - self.center) / self.radius);
 
-        eprintln!("{}", outward_normal.length());
-
         Some(HitRecord::new(ray, t, hit_point, outward_normal))
+    }
+}
+
+mod tests {
+    #[test]
+    fn deserialize() {
+        use crate::math::primitives::Sphere;
+        use crate::math::types::*;
+        use serde::Deserialize;
+
+        let toml_str = r#"
+            [primitive.sphere]
+            center = [0.0, 0.0, -1.0]
+            radius = 0.5
+        "#;
+
+        #[derive(Deserialize)]
+        struct Config {
+            primitive: Primitive,
+        }
+
+        #[derive(Deserialize)]
+        struct Primitive {
+            sphere: Sphere,
+        }
+
+        let config: Config = toml::from_str(toml_str).unwrap();
+        assert!(Vec3::new(0.0, 0.0, -1.0) == config.primitive.sphere.center);
+        assert!(0.5 == config.primitive.sphere.radius);
     }
 }
