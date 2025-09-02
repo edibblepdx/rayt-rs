@@ -1,7 +1,11 @@
-use indicatif::ProgressIterator;
-//use log::info;
+use indicatif::{ParallelProgressIterator, ProgressIterator, ProgressStyle};
 
-use std::io;
+use std::{
+    io::{self, Write},
+    sync::Arc,
+};
+
+use rayon::prelude::*;
 
 use rayt_rs::math::types::*;
 use rayt_rs::{
@@ -12,6 +16,7 @@ use rayt_rs::{
         primitives::Sphere,
     },
     ray::Ray,
+    //threadpool::ThreadPool,
 };
 
 const ASPECT_RATIO: f64 = 16.0 / 9.0;
@@ -23,8 +28,8 @@ fn main() {
     // -----
 
     // Image dimensions are integer-valued.
-    let image_width: u32 = 400;
-    let mut image_height: u32 = (image_width as f64 / ASPECT_RATIO) as u32;
+    let image_width: usize = 400;
+    let mut image_height: usize = (image_width as f64 / ASPECT_RATIO) as usize;
     image_height = if image_height < 1 { 1 } else { image_height };
 
     // World
@@ -72,17 +77,42 @@ fn main() {
 
     println!("P3\n{image_width} {image_height}\n255");
 
-    for j in (0..image_height).progress() {
-        for i in 0..image_width {
-            let pixel_center =
-                pixel00_loc + (i as f64 * pixel_delta_u) + (j as f64 * pixel_delta_v);
-            let ray_direction = UnitVec3::new_normalize(pixel_center - eye);
-            let r = Ray::new(eye, ray_direction);
+    let world = Arc::new(world);
 
-            let pixel_color = ray_color(&r, &world);
-            write_color(io::stdout(), &pixel_color).expect("Failed Write");
-        }
+    let image_area = image_width * image_height;
+    let mut pixels: Vec<Color> = Vec::with_capacity(image_area);
+    // safety: look one line up
+    unsafe { pixels.set_len(image_area) };
+
+    let ps = ProgressStyle::with_template(
+        "[{elapsed_precise}] [{wide_bar:.cyan/blue}] {pos:>7}/{len:7}",
+    )
+    .unwrap()
+    .progress_chars("#>-");
+
+    log::info!("Generating Image");
+    pixels
+        .par_chunks_mut(image_width)
+        .progress_with_style(ps.clone())
+        .enumerate()
+        .for_each(|(j, row)| {
+            for i in 0..image_width {
+                let pixel_center =
+                    pixel00_loc + (i as f64 * pixel_delta_u) + (j as f64 * pixel_delta_v);
+
+                let ray_direction = UnitVec3::new_normalize(pixel_center - eye);
+                let r = Ray::new(eye, ray_direction);
+
+                row[i] = ray_color(&r, &world);
+            }
+        });
+
+    log::info!("Writing Image");
+    let mut out = io::BufWriter::new(io::stdout());
+    for pixel_color in pixels.iter().progress_with_style(ps.clone()) {
+        write_color(&mut out, &pixel_color).expect("Failed Write");
     }
+    out.flush().unwrap();
 }
 
 fn ray_color(ray: &Ray, world: &HittableList) -> Color {
