@@ -39,11 +39,14 @@ impl Hittable for Sphere {
         }
 
         // Find smallest root in range.
+
         let sqrtd = discriminant.sqrt();
+        let range = t_min..=t_max;
+
         let mut t = (h - sqrtd) / a;
-        if !(t_min..=t_max).contains(&t) {
+        if !range.contains(&t) {
             t = (h + sqrtd) / a;
-            if !(t_min..=t_max).contains(&t) {
+            if !range.contains(&t) {
                 return None;
             }
         }
