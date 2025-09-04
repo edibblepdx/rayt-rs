@@ -1,4 +1,4 @@
-use crate::math::types::{Point3, UnitVec3};
+use crate::math::types::{Interval, Point3, UnitVec3};
 use crate::{
     math::{
         hittable::{HitRecord, Hittable},
@@ -25,7 +25,7 @@ impl Sphere {
 impl Primitive for Sphere {}
 
 impl Hittable for Sphere {
-    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn hit(&self, ray: &Ray, ray_t: Interval) -> Option<HitRecord> {
         let (r_origin, r_direction) = (ray.origin(), ray.direction());
 
         let oc = self.center - r_origin;
@@ -41,12 +41,11 @@ impl Hittable for Sphere {
         // Find smallest root in range.
 
         let sqrtd = discriminant.sqrt();
-        let range = t_min..=t_max;
 
         let mut t = (h - sqrtd) / a;
-        if !range.contains(&t) {
+        if !ray_t.surrounds(t) {
             t = (h + sqrtd) / a;
-            if !range.contains(&t) {
+            if !ray_t.surrounds(t) {
                 return None;
             }
         }

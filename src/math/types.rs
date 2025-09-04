@@ -1,4 +1,6 @@
-//! This module defines types using glam.
+//! This module defines types.
+
+use crate::math::constants::INFINITY;
 
 use std::ops::{Deref, Neg};
 
@@ -41,5 +43,42 @@ impl Neg for UnitVec3 {
 
     fn neg(self) -> Self::Output {
         UnitVec3(-self.0)
+    }
+}
+
+/// An interval defines a range over it's parameters.
+#[derive(Clone, Copy, Debug)]
+pub struct Interval(pub f64, pub f64);
+
+impl Interval {
+    pub const EMPTY: Interval = Interval(INFINITY, -INFINITY);
+    pub const UNIVERSE: Interval = Interval(-INFINITY, INFINITY);
+
+    pub fn new(min: f64, max: f64) -> Self {
+        Interval(min, max)
+    }
+
+    pub fn size(&self) -> f64 {
+        self.1 - self.0
+    }
+
+    pub fn contains(&self, x: f64) -> bool {
+        (self.0..self.1).contains(&x)
+    }
+
+    pub fn surrounds(&self, x: f64) -> bool {
+        self.0 < x && x < self.1
+    }
+}
+
+impl Default for Interval {
+    fn default() -> Interval {
+        Interval::EMPTY
+    }
+}
+
+impl From<(f64, f64)> for Interval {
+    fn from((min, max): (f64, f64)) -> Interval {
+        Interval(min, max)
     }
 }

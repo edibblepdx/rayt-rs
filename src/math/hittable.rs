@@ -1,6 +1,6 @@
 //! This module defines a trait for hittable objects.
 
-use crate::math::types::{Point3, UnitVec3};
+use crate::math::types::{Interval, Point3, UnitVec3};
 use crate::ray::Ray;
 
 #[derive(Default)]
@@ -41,7 +41,7 @@ impl HitRecord {
 
 /// Allows a type to be tested for ray intersections.
 pub trait Hittable {
-    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
+    fn hit(&self, ray: &Ray, ray_t: Interval) -> Option<HitRecord>;
 }
 
 #[derive(Default)]
@@ -60,11 +60,11 @@ impl HittableList {
 
 impl Hittable for HittableList {
     /// Iterate through all hittable objects to find the closest hit.
-    fn hit(&self, ray: &Ray, t_min: f64, mut t_max: f64) -> Option<HitRecord> {
+    fn hit(&self, ray: &Ray, mut ray_t: Interval) -> Option<HitRecord> {
         let mut record = None;
         for o in &self.objects {
-            record = o.hit(ray, t_min, t_max).map_or(record, |r| {
-                t_max = r.t;
+            record = o.hit(ray, ray_t).map_or(record, |r| {
+                ray_t.1 = r.t;
                 Some(r)
             })
         }

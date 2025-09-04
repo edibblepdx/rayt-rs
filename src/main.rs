@@ -7,7 +7,7 @@ use std::{
 
 use rayon::prelude::*;
 
-use rayt_rs::math::types::*;
+use rayt_rs::math::{constants::*, types::*};
 use rayt_rs::{
     //camera::Camera,
     color::{Color, write_color},
@@ -118,7 +118,7 @@ fn main() {
 }
 
 fn ray_color(ray: &Ray, world: &HittableList) -> Color {
-    if let Some(record) = world.hit(ray, 0.0, 10.0) {
+    if let Some(record) = world.hit(ray, (0.0, INFINITY).into()) {
         let mapped = record.normal.map(|e| (e + 1.0) / 2.0);
         return Color(mapped);
     }
