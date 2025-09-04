@@ -13,5 +13,6 @@
 - [ ] Shadows
 - [ ] Scene loading from toml file
 - [x] Deserialization of geometric primitives
+- [ ] accelerated rendering
 
 ## Getting Started
