@@ -3,6 +3,8 @@
 **A multithreaded software ray tracer written in Rust.**
 
 ## Features
+- [x] Ray intersection
+- [ ] Ray refraction
 - [x] Sphere intersection
 - [ ] Gltf model loading
 - [ ] Materials
