@@ -1,3 +1,18 @@
 # rayt-rs
 
-Software ray tracer in Rust.
+**A multithreaded software ray tracer written in Rust.**
+
+## Features
+- [x] Ray intersection
+- [ ] Ray refraction
+- [x] Sphere intersection
+- [ ] Gltf model loading
+- [ ] Materials
+- [x] Camera
+- [x] Multithreaded rendering using rayon
+- [ ] Shadows
+- [ ] Scene loading from toml file
+- [x] Deserialization of geometric primitives
+- [ ] accelerated rendering
+
+## Getting Started
