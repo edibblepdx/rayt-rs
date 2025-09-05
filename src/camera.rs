@@ -183,3 +183,33 @@ impl Default for CameraBuilder {
         }
     }
 }
+
+mod tests {
+    #[test]
+    fn deserialize() {
+        use crate::camera::CameraBuilder;
+        use crate::prelude::*;
+        use serde::Deserialize;
+
+        let toml_str = r#"
+            [camera]
+            aspect_ratio = 1.5
+            image_width = 200
+            position = [1.0, 1.0, 1.0]
+            look_at = [0.0, 0.0, -2.0]
+            up = [0.0, 2.0, 0.0]
+        "#;
+
+        #[derive(Deserialize)]
+        struct Config {
+            camera: CameraBuilder,
+        }
+
+        let config: Config = toml::from_str(toml_str).unwrap();
+        assert!(1.5 == config.camera.aspect_ratio);
+        assert!(200 == config.camera.image_width);
+        assert!(Point3::splat(1.0) == config.camera.position);
+        assert!(Vec3::new(0.0, 0.0, -2.0) == config.camera.look_at);
+        assert!(Vec3::new(0.0, 2.0, 0.0) == config.camera.up);
+    }
+}
