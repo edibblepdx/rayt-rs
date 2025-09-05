@@ -16,3 +16,9 @@
 - [ ] accelerated rendering
 
 ## Getting Started
+
+## License
+
+This project is licensed under the [MIT License][License].
+
+[License]: ./LICENSE
