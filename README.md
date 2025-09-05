@@ -3,17 +3,19 @@
 **A multithreaded software ray tracer written in Rust.**
 
 ## Features
+- [x] Camera
 - [x] Ray intersection
 - [ ] Ray refraction
 - [x] Sphere intersection
-- [ ] Gltf model loading
-- [ ] Materials
-- [x] Camera
 - [x] Multithreaded rendering using rayon
-- [ ] Shadows
-- [ ] Scene loading from toml file
-- [x] Deserialization of geometric primitives
+- [x] Scene loading from toml file
+- [x] Sphere Deserialization
+- [x] Camera Deserialization
 - [ ] accelerated rendering
+- [ ] anti-aliasing
+- [ ] Materials
+- [ ] Shadows
+- [ ] Gltf model loading
 
 ## Getting Started
 
