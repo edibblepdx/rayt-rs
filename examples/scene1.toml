@@ -1,3 +1,26 @@
-[primitive.sphere]
-center = [0.0, 0.0, -1.0]
+[camera]
+aspect_ratio = 1.0
+image_width = 800
+position = [0.0, 0.0, 0.0]
+look_at = [0.0, 0.0, -1.0]
+up = [0.0, 1.0, 0.0]
+
+[[primitive.sphere]]
+center = [0.0, 1.0, -1.0]
+radius = 0.65
+
+[[primitive.sphere]]
+center = [0.0, -1.0, -1.0]
+radius = 0.65
+
+[[primitive.sphere]]
+center = [1.0, 0.0, -1.0]
+radius = 0.65
+
+[[primitive.sphere]]
+center = [-1.0, 0.0, -1.0]
+radius = 0.65
+
+[[primitive.sphere]]
+center = [0.0, 0.0, -3.0]
 radius = 0.5
