@@ -4,6 +4,8 @@ use rayt_rs::prelude::*;
 const ASPECT_RATIO: f64 = 16.0 / 9.0;
 
 fn main() {
+    // Safety: just for logging
+    unsafe { std::env::set_var("RUST_LOG", "info") }
     env_logger::init();
 
     let mut world = HittableList::default();
