@@ -1,9 +1,7 @@
 use crate::math::types::{Interval, Point3, UnitVec3};
 use crate::{
-    math::{
-        hittable::{HitRecord, Hittable},
-        primitives::Primitive,
-    },
+    hittable::{HitRecord, Hittable},
+    math::primitives::Primitive,
     ray::Ray,
 };
 
