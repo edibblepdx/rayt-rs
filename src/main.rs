@@ -7,16 +7,10 @@ use std::{
 
 use rayon::prelude::*;
 
-use rayt_rs::math::{constants::*, types::*};
+use rayt_rs::prelude::*;
 use rayt_rs::{
-    //camera::Camera,
     color::{Color, write_color},
-    math::{
-        hittable::{Hittable, HittableList},
-        primitives::Sphere,
-    },
-    ray::Ray,
-    //threadpool::ThreadPool,
+    math::primitives::Sphere,
 };
 
 const ASPECT_RATIO: f64 = 16.0 / 9.0;
