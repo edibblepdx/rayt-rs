@@ -45,16 +45,14 @@ pub trait Hittable {
 }
 
 #[derive(Default)]
-pub struct HittableList {
-    pub objects: Vec<Box<dyn Hittable + Send + Sync>>,
-}
+pub struct HittableList(Vec<Box<dyn Hittable + Send + Sync>>);
 
 impl HittableList {
     pub fn add<T>(&mut self, o: T)
     where
         T: Hittable + Send + Sync + 'static,
     {
-        self.objects.push(Box::new(o))
+        self.0.push(Box::new(o))
     }
 }
 
@@ -62,7 +60,7 @@ impl Hittable for HittableList {
     /// Iterate through all hittable objects to find the closest hit.
     fn hit(&self, ray: &Ray, mut ray_t: Interval) -> Option<HitRecord> {
         let mut record = None;
-        for o in &self.objects {
+        for o in &self.0 {
             record = o.hit(ray, ray_t).map_or(record, |r| {
                 ray_t.1 = r.t;
                 Some(r)
