@@ -67,7 +67,7 @@ impl Camera {
 
         let mut out = io::BufWriter::new(io::stdout());
         for pixel_color in pixels.iter().progress_with_style(ps.clone()) {
-            write_color(&mut out, &pixel_color).expect("Failed Write");
+            write_color(&mut out, pixel_color).expect("Failed Write");
         }
         out.flush().unwrap();
     }
