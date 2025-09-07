@@ -45,7 +45,7 @@ pub enum Error {
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
         match self {
-            Error::FileReadError(s) => write!(f, "File read error: {}", s),
+            Error::FileReadError(s) => write!(f, "Config file read error: {}", s),
             Error::ConfigDeError(s) => write!(f, "Config deserialization error: {}", s),
         }
     }

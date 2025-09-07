@@ -28,15 +28,8 @@ impl Camera {
     }
 
     pub fn render(self, world: HittableList) {
-        println!("P3\n{} {}\n255", self.image_width, self.image_height);
-
         let world = Arc::new(world);
-
         let image_area = self.image_width * self.image_height;
-        let mut pixels: Vec<Color> = Vec::with_capacity(image_area);
-
-        // safety: look one line up
-        unsafe { pixels.set_len(image_area) };
 
         let ps = ProgressStyle::with_template(
             "[{elapsed_precise}] [{wide_bar:.cyan/blue}] {pos:>7}/{len:7}",
@@ -44,14 +37,16 @@ impl Camera {
         .unwrap()
         .progress_chars("#>-");
 
-        log::info!("Generating Image");
+        log::info!("Rendering Image");
 
+        let mut pixels: Vec<Color> = Vec::with_capacity(image_area);
         pixels
+            .spare_capacity_mut() // MaybeUninit
             .par_chunks_mut(self.image_width)
             .progress_with_style(ps.clone())
             .enumerate()
             .for_each(|(j, row)| {
-                for i in 0..self.image_width {
+                for (i, pixel) in row.iter_mut().enumerate().take(self.image_width) {
                     let pixel_center = self.pixel00_loc
                         + (i as f64 * self.pixel_delta_u)
                         + (j as f64 * self.pixel_delta_v);
@@ -59,11 +54,16 @@ impl Camera {
                     let ray_direction = UnitVec3::new_normalize(pixel_center - self.position);
                     let r = Ray::new(self.position, ray_direction);
 
-                    row[i] = Camera::ray_color(&r, &world);
+                    pixel.write(Camera::ray_color(&r, &world));
                 }
             });
 
+        // Safety: all elements are initialized.
+        unsafe { pixels.set_len(image_area) };
+
         log::info!("Writing Image");
+
+        println!("P3\n{} {}\n255", self.image_width, self.image_height);
 
         let mut out = io::BufWriter::new(io::stdout());
         for pixel_color in pixels.iter().progress_with_style(ps.clone()) {
