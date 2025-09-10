@@ -20,6 +20,7 @@
 ## Samplers
 - Single Sampler
 - Random Sampler
+- Stratified Sampler
 
 ## Getting Started
 
