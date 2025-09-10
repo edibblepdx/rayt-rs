@@ -6,8 +6,9 @@ look_at = [0.0, 0.0, -1.0]
 up = [0.0, 1.0, 0.0]
 
 [camera.sampler]
-type = "random"
-samples_per_pixel = 50
+type = "stratified"
+nx = 5
+ny = 5
 
 [[primitive.sphere]]
 center = [0.0, 1.0, -1.0]
