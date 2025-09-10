@@ -1,5 +1,6 @@
 use rayt_rs::math::primitives::Sphere;
 use rayt_rs::prelude::*;
+use rayt_rs::samplers::*;
 
 const ASPECT_RATIO: f64 = 16.0 / 9.0;
 
@@ -15,6 +16,9 @@ fn main() {
     let camera = Camera::builder()
         .aspect_ratio(ASPECT_RATIO)
         .image_width(400usize)
+        .sampler(SamplerConfig::Random {
+            samples_per_pixel: 50,
+        })
         .build();
 
     camera.render(world);

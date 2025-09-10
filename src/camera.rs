@@ -1,5 +1,6 @@
 use crate::color::*;
 use crate::prelude::*;
+use crate::samplers::*;
 
 use std::{
     io::{self, Write},
@@ -11,6 +12,7 @@ use rayon::prelude::*;
 
 #[allow(unused)]
 pub struct Camera {
+    sampler: Box<dyn Sampler + Sync>,
     image_width: usize,
     image_height: usize,
     position: Point3,
@@ -47,14 +49,15 @@ impl Camera {
             .enumerate()
             .for_each(|(j, row)| {
                 for (i, pixel) in row.iter_mut().enumerate().take(self.image_width) {
-                    let pixel_center = self.pixel00_loc
-                        + (i as f64 * self.pixel_delta_u)
-                        + (j as f64 * self.pixel_delta_v);
+                    let mut color = Color::BLACK;
+                    for sample in self.sampler.samples(i as f64, j as f64) {
+                        let ray = self.get_ray(sample);
+                        *color += *self.ray_color(&ray, &world);
+                    }
 
-                    let ray_direction = UnitVec3::new_normalize(pixel_center - self.position);
-                    let r = Ray::new(self.position, ray_direction);
-
-                    pixel.write(Camera::ray_color(&r, &world));
+                    let nsamples = self.sampler.nsamples() as f64;
+                    let color: Color = color.map(|e| e / nsamples).into();
+                    pixel.write(color);
                 }
             });
 
@@ -72,7 +75,7 @@ impl Camera {
         out.flush().unwrap();
     }
 
-    fn ray_color(ray: &Ray, world: &HittableList) -> Color {
+    fn ray_color(&self, ray: &Ray, world: &HittableList) -> Color {
         if let Some(record) = world.hit(ray, (0.0, INFINITY).into()) {
             let mapped = record.normal.map(|e| (e + 1.0) / 2.0);
             return Color(mapped);
@@ -86,6 +89,18 @@ impl Camera {
 
         Color((1.0 - t) * start.0 + t * end.0)
     }
+
+    #[rustfmt::skip]
+    fn get_ray(&self, (sx, sy): (f64, f64)) -> Ray {
+        let pixel_sample = self.pixel00_loc
+            + (sx * self.pixel_delta_u)
+            + (sy * self.pixel_delta_v);
+
+        let ray_direction =
+            UnitVec3::new_normalize(pixel_sample - self.position);
+
+        Ray::new(self.position, ray_direction)
+    }
 }
 
 impl Default for Camera {
@@ -96,6 +111,7 @@ impl Default for Camera {
 
 #[derive(serde::Deserialize)]
 pub struct CameraBuilder {
+    sampler: SamplerConfig,
     aspect_ratio: f64,
     image_width: usize,
     position: Point3,
@@ -133,7 +149,11 @@ impl CameraBuilder {
             self.position - Vec3::new(viewport_width / 2.0, -viewport_height / 2.0, focal_length);
         let pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
+        // Sampler.
+        let sampler = self.sampler.into_sampler();
+
         Camera {
+            sampler,
             image_width,
             image_height,
             position: self.position,
@@ -144,6 +164,11 @@ impl CameraBuilder {
             right,
             up,
         }
+    }
+
+    pub fn sampler(mut self, sampler: SamplerConfig) -> Self {
+        self.sampler = sampler;
+        self
     }
 
     pub fn aspect_ratio(mut self, aspect: impl Into<f64>) -> Self {
@@ -175,6 +200,7 @@ impl CameraBuilder {
 impl Default for CameraBuilder {
     fn default() -> CameraBuilder {
         CameraBuilder {
+            sampler: SamplerConfig::Single,
             aspect_ratio: 1.0,
             image_width: 100,
             position: Point3::splat(0.0),
@@ -185,10 +211,10 @@ impl Default for CameraBuilder {
 }
 
 mod tests {
+
     #[test]
     fn deserialize() {
-        use crate::camera::CameraBuilder;
-        use crate::prelude::*;
+        use super::*;
         use serde::Deserialize;
 
         let toml_str = r#"
@@ -198,6 +224,9 @@ mod tests {
             position = [1.0, 1.0, 1.0]
             look_at = [0.0, 0.0, -2.0]
             up = [0.0, 2.0, 0.0]
+
+            [camera.sampler]
+            type = "single"
         "#;
 
         #[derive(Deserialize)]

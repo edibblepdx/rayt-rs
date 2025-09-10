@@ -5,6 +5,10 @@ position = [0.0, 0.0, 0.0]
 look_at = [0.0, 0.0, -1.0]
 up = [0.0, 1.0, 0.0]
 
+[camera.sampler]
+type = "random"
+samples_per_pixel = 50
+
 [[primitive.sphere]]
 center = [0.0, 1.0, -1.0]
 radius = 0.65

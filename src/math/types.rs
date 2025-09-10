@@ -75,6 +75,11 @@ impl Interval {
     pub fn surrounds(&self, x: f64) -> bool {
         self.0 < x && x < self.1
     }
+
+    /// Clamps `x` to be within this interval.
+    pub fn clamp(&self, x: f64) -> f64 {
+        f64::max(f64::min(x, self.1), self.0)
+    }
 }
 
 impl Default for Interval {

@@ -3,6 +3,7 @@ pub mod color;
 pub mod hittable;
 pub mod math;
 pub mod ray;
+pub mod samplers;
 pub mod scene_builder;
 
 // reexport Hittable trait.
