@@ -12,10 +12,14 @@
 - [x] Sphere Deserialization
 - [x] Camera Deserialization
 - [ ] accelerated rendering
-- [ ] anti-aliasing
+- [x] anti-aliasing
 - [ ] Materials
 - [ ] Shadows
 - [ ] Gltf model loading
+
+## Samplers
+- Single Sampler
+- Random Sampler
 
 ## Getting Started
 
