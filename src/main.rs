@@ -16,7 +16,8 @@ fn main() {
     let camera = Camera::builder()
         .aspect_ratio(ASPECT_RATIO)
         .image_width(400usize)
-        .sampler(SamplerConfig::Stratified { nx: 3, ny: 3 })
+        .sampler(SamplerConfig::Stratified { nx: 5, ny: 5 })
+        .max_depth(50)
         .build();
 
     camera.render(world);

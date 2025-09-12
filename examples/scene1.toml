@@ -4,6 +4,7 @@ image_width = 800
 position = [0.0, 0.0, 0.0]
 look_at = [0.0, 0.0, -1.0]
 up = [0.0, 1.0, 0.0]
+max_depth = 50
 
 [camera.sampler]
 type = "stratified"

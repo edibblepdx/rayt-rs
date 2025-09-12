@@ -2,6 +2,8 @@
 
 use crate::math::constants::INFINITY;
 
+use rand::Rng;
+
 use std::ops::{Deref, Neg};
 
 pub type Point3 = glam::f64::DVec3;
@@ -11,14 +13,39 @@ pub type Vec3 = glam::f64::DVec3;
 pub struct UnitVec3(glam::f64::DVec3);
 
 impl UnitVec3 {
+    /// Wraps the given [`Vec3`], assuming it is already normalized.
     pub fn new_normalize(v: Vec3) -> Self {
         UnitVec3(v.normalize())
     }
 
+    /// Normalize the given [`Vec3`] and return it wrapped on a [`UnitVec3`].
     pub fn new_unchecked(v: Vec3) -> Self {
         UnitVec3(v)
     }
 
+    /// Generates a random [`UnitVec3`] with uniform distribution.
+    pub fn random(rng: &mut impl Rng) -> Self {
+        use glam::f64::DVec3;
+        loop {
+            let v = DVec3::new(
+                rng.random_range(-1.0..1.0),
+                rng.random_range(-1.0..1.0),
+                rng.random_range(-1.0..1.0),
+            );
+            let len = v.length();
+            if 1e-160 < len && len <= 1.0 {
+                return UnitVec3(v.normalize());
+            }
+        }
+    }
+
+    /// Generates a random [`UnitVec3`] in the same hemisphere as the normal.
+    pub fn random_on_hemisphere(rng: &mut impl Rng, normal: UnitVec3) -> Self {
+        let unit = UnitVec3::random(rng);
+        if normal.dot(*unit) > 0.0 { unit } else { -unit }
+    }
+
+    /// Retrieves the underlying [`Vec3`].
     pub fn into_inner(self) -> Vec3 {
         self.0
     }

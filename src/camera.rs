@@ -22,6 +22,7 @@ pub struct Camera {
     forward: UnitVec3,
     right: UnitVec3,
     up: UnitVec3,
+    max_depth: i32,
 }
 
 impl Camera {
@@ -52,7 +53,7 @@ impl Camera {
                     let mut color = Color::BLACK;
                     for sample in self.sampler.samples(i as f64, j as f64) {
                         let ray = self.get_ray(sample);
-                        *color += *self.ray_color(&ray, &world);
+                        *color += *Camera::ray_color(&ray, &world, self.max_depth);
                     }
 
                     let nsamples = self.sampler.nsamples() as f64;
@@ -70,24 +71,9 @@ impl Camera {
 
         let mut out = io::BufWriter::new(io::stdout());
         for &pixel_color in pixels.iter().progress_with_style(ps.clone()) {
-            write_color(&mut out, pixel_color).expect("Failed Write");
+            writeln!(out, "{pixel_color}").expect("Failed write");
         }
         out.flush().unwrap();
-    }
-
-    fn ray_color(&self, ray: &Ray, world: &HittableList) -> Color {
-        if let Some(record) = world.hit(ray, (0.0, INFINITY).into()) {
-            let mapped = record.normal.map(|e| (e + 1.0) / 2.0);
-            return Color(mapped);
-        }
-
-        let mut t = ray.direction().y;
-        t = (t + 1.0) / 2.0;
-
-        let start = Color(Vec3::new(1.0, 1.0, 1.0));
-        let end = Color(Vec3::new(0.5, 0.7, 1.0));
-
-        Color((1.0 - t) * start.0 + t * end.0)
     }
 
     #[rustfmt::skip]
@@ -100,6 +86,30 @@ impl Camera {
             UnitVec3::new_normalize(pixel_sample - self.position);
 
         Ray::new(self.position, ray_direction)
+    }
+
+    fn ray_color(ray: &Ray, world: &HittableList, ttl: i32) -> Color {
+        if ttl <= 0 {
+            return Color::BLACK;
+        }
+
+        if let Some(record) = world.hit(ray, (0.0, INFINITY).into()) {
+            /*
+            let mapped = record.normal.map(|e| (e + 1.0) / 2.0);
+            return Color(mapped);
+            */
+            let direction = UnitVec3::random_on_hemisphere(&mut rand::rng(), record.normal);
+            return Camera::ray_color(&Ray::new(record.hit_point, direction), world, ttl - 1) * 0.5;
+        }
+
+        let mut t = ray.direction().y;
+        t = (t + 1.0) / 2.0;
+
+        // background gradient
+        let start = Color(Vec3::new(1.0, 1.0, 1.0));
+        let end = Color(Vec3::new(0.5, 0.7, 1.0));
+
+        Color((1.0 - t) * start.0 + t * end.0)
     }
 }
 
@@ -117,6 +127,7 @@ pub struct CameraBuilder {
     position: Point3,
     look_at: Vec3,
     up: Vec3,
+    max_depth: i32,
 }
 
 impl CameraBuilder {
@@ -163,6 +174,7 @@ impl CameraBuilder {
             forward,
             right,
             up,
+            max_depth: self.max_depth,
         }
     }
 
@@ -195,6 +207,11 @@ impl CameraBuilder {
         self.up = vup.into();
         self
     }
+
+    pub fn max_depth(mut self, depth: impl Into<i32>) -> Self {
+        self.max_depth = depth.into();
+        self
+    }
 }
 
 impl Default for CameraBuilder {
@@ -206,6 +223,7 @@ impl Default for CameraBuilder {
             position: Point3::splat(0.0),
             look_at: Vec3::NEG_Z,
             up: Vec3::Y,
+            max_depth: 10,
         }
     }
 }
@@ -224,6 +242,7 @@ mod tests {
             position = [1.0, 1.0, 1.0]
             look_at = [0.0, 0.0, -2.0]
             up = [0.0, 2.0, 0.0]
+            max_depth = 25
 
             [camera.sampler]
             type = "single"
@@ -240,5 +259,6 @@ mod tests {
         assert!(Point3::splat(1.0) == config.camera.position);
         assert!(Vec3::new(0.0, 0.0, -2.0) == config.camera.look_at);
         assert!(Vec3::new(0.0, 2.0, 0.0) == config.camera.up);
+        assert!(25 == config.camera.max_depth);
     }
 }
