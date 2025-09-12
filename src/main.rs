@@ -16,9 +16,7 @@ fn main() {
     let camera = Camera::builder()
         .aspect_ratio(ASPECT_RATIO)
         .image_width(400usize)
-        .sampler(SamplerConfig::Random {
-            samples_per_pixel: 50,
-        })
+        .sampler(SamplerConfig::Stratified { nx: 3, ny: 3 })
         .build();
 
     camera.render(world);

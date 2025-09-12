@@ -38,7 +38,7 @@ impl Sampler for SingleSampler {
     }
 }
 
-/// Randomly samples within a box.
+/// Randomly samples within a bounding box.
 pub struct RandomSampler {
     pub samples_per_pixel: usize,
 }
@@ -59,6 +59,9 @@ impl Sampler for RandomSampler {
 }
 
 /// Stratified sampler.
+///
+/// Divides a bounding box into smaller sub-areas and randomly samples
+/// once in each sub-area.
 pub struct StratifiedSampler {
     nx: usize,
     ny: usize,

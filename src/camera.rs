@@ -69,7 +69,7 @@ impl Camera {
         println!("P3\n{} {}\n255", self.image_width, self.image_height);
 
         let mut out = io::BufWriter::new(io::stdout());
-        for pixel_color in pixels.iter().progress_with_style(ps.clone()) {
+        for &pixel_color in pixels.iter().progress_with_style(ps.clone()) {
             write_color(&mut out, pixel_color).expect("Failed Write");
         }
         out.flush().unwrap();

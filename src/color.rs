@@ -33,15 +33,18 @@ impl From<Vec3> for Color {
     }
 }
 
-/// Writes the pixel color to `out`.
-pub fn write_color(mut out: impl Write, pixel: &Color) -> Result<()> {
-    let r = pixel.0.x;
-    let g = pixel.0.y;
-    let b = pixel.0.z;
+/// Converts linear to gamma.
+pub fn linear_to_gamma(c: Color) -> Color {
+    Color(c.powf(1.0 / 2.2))
+}
 
-    let ir = (255.999 * r) as u8;
-    let ig = (255.999 * g) as u8;
-    let ib = (255.999 * b) as u8;
+/// Writes the pixel color to `out`.
+pub fn write_color(mut out: impl Write, pixel: Color) -> Result<()> {
+    let c = linear_to_gamma(pixel);
+
+    let ir = (255.999 * c.0.x) as u8;
+    let ig = (255.999 * c.0.y) as u8;
+    let ib = (255.999 * c.0.z) as u8;
 
     writeln!(out, "{ir} {ig} {ib}")
 }
