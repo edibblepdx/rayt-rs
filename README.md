@@ -13,6 +13,7 @@
 - [x] Camera Deserialization
 - [ ] accelerated rendering
 - [x] anti-aliasing
+- [x] gamma correction
 - [ ] Materials
 - [ ] Shadows
 - [ ] Gltf model loading
