@@ -1,14 +1,19 @@
 use crate::math::types::{Interval, Point3, UnitVec3};
 use crate::{
     hittable::{HitRecord, Hittable},
+    materials::MaterialId,
     math::primitives::Primitive,
     ray::Ray,
 };
 
 #[derive(Copy, Clone, serde::Deserialize)]
 pub struct Sphere {
+    /// The center of the sphere.
     center: Point3,
+    /// The radius of the sphere.
     radius: f64,
+    /// The material of the surface.
+    material: MaterialId,
 }
 
 impl Sphere {

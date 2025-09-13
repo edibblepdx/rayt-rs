@@ -30,7 +30,7 @@ impl Camera {
         CameraBuilder::default()
     }
 
-    pub fn render(self, world: HittableList) {
+    pub fn render(self, world: World) {
         let world = Arc::new(world);
         let image_area = self.image_width * self.image_height;
 

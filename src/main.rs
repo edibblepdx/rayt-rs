@@ -5,7 +5,7 @@ use rayt_rs::samplers::*;
 const ASPECT_RATIO: f64 = 16.0 / 9.0;
 
 fn main() {
-    // Safety: just for logging
+    // Safety: logging
     unsafe { std::env::set_var("RUST_LOG", "info") }
     env_logger::init();
 
@@ -13,15 +13,14 @@ fn main() {
     world.add(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5));
     world.add(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0));
 
+    let mut world = World::default();
+    world.add_object(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5));
+    world.add_object(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0));
+
     let camera = Camera::builder()
         .aspect_ratio(ASPECT_RATIO)
         .image_width(400usize)
-        .sampler(SamplerConfig::Stratified { nx: 5, ny: 5 })
-        /*
-        .sampler(SamplerConfig::Random {
-            samples_per_pixel: 50,
-        })
-        */
+        .sampler(SamplerConfig::Stratified { nx: 10, ny: 10 })
         .max_depth(50)
         .build();
 

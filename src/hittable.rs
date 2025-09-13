@@ -1,7 +1,7 @@
 //! This module defines a trait for hittable objects.
 
 use crate::math::types::{Interval, Point3, UnitVec3};
-use crate::ray::Ray;
+use crate::{materials::MaterialId, ray::Ray};
 
 #[derive(Default)]
 pub enum FrontFace {
@@ -19,11 +19,19 @@ pub struct HitRecord {
     pub normal: UnitVec3,
     /// The front face of the surface in relation to the ray.
     pub front_face: FrontFace,
+    /// The material of the surface.
+    pub material: MaterialId,
 }
 
 impl HitRecord {
     /// Constructs a new `HitRecord`.
-    pub fn new(ray: &Ray, t: f64, hit_point: Point3, outward_normal: UnitVec3) -> Self {
+    pub fn new(
+        ray: &Ray,
+        t: f64,
+        hit_point: Point3,
+        outward_normal: UnitVec3,
+        material: MaterialId,
+    ) -> Self {
         let (front_face, normal) = if ray.direction().dot(*outward_normal) < 0.0 {
             (FrontFace::Outside, outward_normal)
         } else {
@@ -35,6 +43,7 @@ impl HitRecord {
             hit_point,
             normal,
             front_face,
+            material,
         }
     }
 }
