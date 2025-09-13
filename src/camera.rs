@@ -93,12 +93,16 @@ impl Camera {
             return Color::BLACK;
         }
 
-        if let Some(record) = world.hit(ray, (0.0, INFINITY).into()) {
+        if let Some(record) = world.hit(ray, (0.001, INFINITY).into()) {
             /*
             let mapped = record.normal.map(|e| (e + 1.0) / 2.0);
             return Color(mapped);
             */
+            /*
             let direction = UnitVec3::random_on_hemisphere(&mut rand::rng(), record.normal);
+            */
+            let direction =
+                UnitVec3::new_normalize(*record.normal + *UnitVec3::random(&mut rand::rng()));
             return Camera::ray_color(&Ray::new(record.hit_point, direction), world, ttl - 1) * 0.5;
         }
 

@@ -41,9 +41,12 @@ impl Mul<f64> for Color {
     }
 }
 
+const GAMMA: f64 = 1.0 / 2.2;
+
 /// Converts linear to gamma.
 fn linear_to_gamma(c: Color) -> Color {
-    Color(c.powf(1.0 / 2.2))
+    //Color(c.map(|e| if e > 0.0 { e.powf(GAMMA) } else { e }))
+    Color(c.powf(GAMMA))
 }
 
 impl fmt::Display for Color {

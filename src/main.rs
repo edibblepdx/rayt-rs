@@ -17,6 +17,11 @@ fn main() {
         .aspect_ratio(ASPECT_RATIO)
         .image_width(400usize)
         .sampler(SamplerConfig::Stratified { nx: 5, ny: 5 })
+        /*
+        .sampler(SamplerConfig::Random {
+            samples_per_pixel: 50,
+        })
+        */
         .max_depth(50)
         .build();
 
