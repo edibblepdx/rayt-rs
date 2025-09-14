@@ -1,4 +1,4 @@
-use crate::{camera::*, hittable::HittableList, math::primitives::*};
+use crate::{camera::*, math::primitives::*, world::World};
 
 use std::{fs, path::Path};
 
@@ -7,7 +7,7 @@ use serde::Deserialize;
 pub struct SceneBuilder;
 
 impl SceneBuilder {
-    pub fn build(path: impl AsRef<Path>) -> Result<(Camera, HittableList), Error> {
+    pub fn build(path: impl AsRef<Path>) -> Result<(Camera, World), Error> {
         let toml_str =
             fs::read_to_string(path).map_err(|err| Error::FileReadError(err.to_string()))?;
 
@@ -15,11 +15,17 @@ impl SceneBuilder {
             .map_err(|err| Error::ConfigDeError(err.message().to_string()))?;
 
         let camera = config.camera.build();
-        let mut world = HittableList::default();
+        let mut world = World::default();
 
         for sphere in config.primitive.sphere {
-            world.add(sphere);
+            world.add_object(sphere);
         }
+
+        /*
+        for material in config.material {
+            world.add_material(material);
+        }
+        */
 
         Ok((camera, world))
     }

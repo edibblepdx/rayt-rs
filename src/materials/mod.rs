@@ -2,7 +2,7 @@ use crate::{color::Color, hittable::HitRecord, ray::Ray};
 
 use std::collections::HashMap;
 
-#[derive(Copy, Clone, serde::Deserialize)]
+#[derive(Copy, Clone, serde::Deserialize, PartialEq, Eq, Hash)]
 pub struct MaterialId(u32);
 
 impl From<u32> for MaterialId {
@@ -12,14 +12,15 @@ impl From<u32> for MaterialId {
 }
 
 #[derive(Default)]
-pub struct MaterialMap(HashMap<i32, Box<dyn Material + Send + Sync>>);
+pub struct MaterialMap(HashMap<MaterialId, Box<dyn Material + Send + Sync>>);
 
 impl MaterialMap {
-    pub fn insert<T>(&mut self, k: i32, v: T)
+    pub fn insert<K, V>(&mut self, k: K, v: V)
     where
-        T: Material + Send + Sync + 'static,
+        K: Into<MaterialId>,
+        V: Material + Send + Sync + 'static,
     {
-        self.0.insert(k, Box::new(v));
+        self.0.insert(k.into(), Box::new(v));
     }
 }
 

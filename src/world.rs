@@ -2,7 +2,7 @@
 
 use crate::{
     hittable::{Hittable, HittableList},
-    materials::{Material, MaterialMap},
+    materials::{Material, MaterialId, MaterialMap},
 };
 
 #[derive(Default)]
@@ -23,9 +23,10 @@ impl World {
     }
 
     /// Adds a material to the world.
-    pub fn add_material<T>(&mut self, k: i32, v: T)
+    pub fn add_material<K, V>(&mut self, k: K, v: V)
     where
-        T: Material + Send + Sync + 'static,
+        K: Into<MaterialId>,
+        V: Material + Send + Sync + 'static,
     {
         self.materials.insert(k, v);
     }

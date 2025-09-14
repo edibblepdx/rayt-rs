@@ -12,12 +12,12 @@ pub struct Sphere {
     center: Point3,
     /// The radius of the sphere.
     radius: f64,
-    /// The material of the surface.
+    /// The material id of the surface.
     material: MaterialId,
 }
 
 impl Sphere {
-    pub fn new<P, M>(center: P, radius: f64, material: M) -> Self
+    pub fn new<P, M>(center: P, radius: f64, material_id: M) -> Self
     where
         P: Into<Point3>,
         M: Into<MaterialId>,
@@ -25,7 +25,7 @@ impl Sphere {
         Sphere {
             center: center.into(),
             radius,
-            material: material.into(),
+            material: material_id.into(),
         }
     }
 }
@@ -74,6 +74,7 @@ impl Hittable for Sphere {
 mod tests {
     #[test]
     fn deserialize() {
+        use crate::materials::MaterialId;
         use crate::math::primitives::Sphere;
         use crate::math::types::*;
         use serde::Deserialize;
@@ -82,6 +83,7 @@ mod tests {
             [primitive.sphere]
             center = [0.0, 0.0, -1.0]
             radius = 0.5
+            material = 1
         "#;
 
         #[derive(Deserialize)]
@@ -97,5 +99,6 @@ mod tests {
         let config: Config = toml::from_str(toml_str).unwrap();
         assert!(Vec3::new(0.0, 0.0, -1.0) == config.primitive.sphere.center);
         assert!(0.5 == config.primitive.sphere.radius);
+        assert!(Into::<MaterialId>::into(1) == config.primitive.sphere.material);
     }
 }
