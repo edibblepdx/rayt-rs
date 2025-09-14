@@ -40,7 +40,7 @@ impl Sampler for SingleSampler {
 
 /// Randomly samples within a bounding box.
 pub struct RandomSampler {
-    pub samples_per_pixel: usize,
+    samples_per_pixel: usize,
 }
 
 impl Sampler for RandomSampler {

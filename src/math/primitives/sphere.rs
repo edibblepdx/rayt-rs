@@ -2,7 +2,7 @@ use crate::math::types::{Interval, Point3, UnitVec3};
 use crate::{
     hittable::{HitRecord, Hittable},
     materials::MaterialId,
-    math::primitives::Primitive,
+    math::primitives::{Primitive, PrimitiveDeExtension},
     ray::Ray,
 };
 
@@ -13,7 +13,7 @@ pub struct Sphere {
     /// The radius of the sphere.
     radius: f64,
     /// The material id of the surface.
-    pub(crate) material_id: MaterialId,
+    material_id: MaterialId,
 }
 
 impl Sphere {
@@ -31,6 +31,17 @@ impl Sphere {
 }
 
 impl Primitive for Sphere {}
+
+impl PrimitiveDeExtension for Sphere {
+    fn material_id(&self) -> MaterialId {
+        self.material_id
+    }
+
+    fn with_material_id(mut self, id: MaterialId) -> Sphere {
+        self.material_id = id;
+        self
+    }
+}
 
 impl Hittable for Sphere {
     fn hit(&self, ray: &Ray, ray_t: Interval) -> Option<HitRecord> {
