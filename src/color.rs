@@ -1,16 +1,27 @@
-use crate::math::types::Vec3;
-
+use crate::math::types::{Interval, Vec3};
 use std::{
     fmt,
     ops::{Deref, DerefMut, Mul},
 };
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq, serde::Deserialize)]
 pub struct Color(pub Vec3);
 
 impl Color {
     pub const BLACK: Color = Color(Vec3::splat(0.0));
     pub const WHITE: Color = Color(Vec3::splat(1.0));
+
+    const GAMMA: f64 = 1.0 / 2.2;
+    const INTENSITY: Interval = Interval(0.0, 0.999);
+
+    pub fn new(r: f64, g: f64, b: f64) -> Self {
+        Color(Vec3::new(r, g, b))
+    }
+
+    /// Converts linear to gamma.
+    fn linear_to_gamma(self) -> Self {
+        Color(self.powf(Color::GAMMA))
+    }
 }
 
 impl Deref for Color {
@@ -34,29 +45,55 @@ impl From<Vec3> for Color {
 }
 
 impl Mul<f64> for Color {
-    type Output = Color;
+    type Output = Self;
 
     fn mul(self, rhs: f64) -> Self::Output {
         Color(self.0 * rhs)
     }
 }
 
-const GAMMA: f64 = 1.0 / 2.2;
+impl Mul for Color {
+    type Output = Self;
 
-/// Converts linear to gamma.
-fn linear_to_gamma(c: Color) -> Color {
-    //Color(c.map(|e| if e > 0.0 { e.powf(GAMMA) } else { e }))
-    Color(c.powf(GAMMA))
+    fn mul(self, rhs: Self) -> Self::Output {
+        Color(self.0 * rhs.0)
+    }
 }
 
 impl fmt::Display for Color {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let c = linear_to_gamma(*self);
+        let c = self.linear_to_gamma();
 
-        let ir = (255.999 * c.0.x) as u8;
-        let ig = (255.999 * c.0.y) as u8;
-        let ib = (255.999 * c.0.z) as u8;
+        let r = (256.0 * Color::INTENSITY.clamp(c.0.x)) as u8;
+        let g = (256.0 * Color::INTENSITY.clamp(c.0.y)) as u8;
+        let b = (256.0 * Color::INTENSITY.clamp(c.0.z)) as u8;
 
-        write!(f, "{ir} {ig} {ib}")
+        write!(f, "{r} {g} {b}")
+    }
+}
+
+mod test {
+    #[test]
+    fn deserialize() {
+        use super::*;
+        use serde::Deserialize;
+
+        let toml_str = r#"
+            [material]
+            albedo = [0.5, 0.5, 1.0]
+        "#;
+
+        #[derive(Deserialize)]
+        struct Config {
+            material: Mat,
+        }
+
+        #[derive(Deserialize)]
+        struct Mat {
+            albedo: Color,
+        }
+
+        let config: Config = toml::from_str(toml_str).unwrap();
+        assert!(Color::new(0.5, 0.5, 1.0) == config.material.albedo);
     }
 }

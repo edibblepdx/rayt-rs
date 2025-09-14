@@ -23,12 +23,11 @@ impl World {
     }
 
     /// Adds a material to the world.
-    pub fn add_material<K, V>(&mut self, k: K, v: V)
+    pub fn add_material<M>(&mut self, material: M) -> MaterialId
     where
-        K: Into<MaterialId>,
-        V: Material + Send + Sync + 'static,
+        M: Material + Send + Sync + 'static,
     {
-        self.materials.insert(k, v);
+        self.materials.insert(material)
     }
 
     /// Returns an immutable reference to hittable objects.

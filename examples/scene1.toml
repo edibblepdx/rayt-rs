@@ -14,24 +14,32 @@ ny = 5
 [[primitive.sphere]]
 center = [0.0, 1.0, -1.0]
 radius = 0.65
-material = 1
+material_id = 1
 
 [[primitive.sphere]]
 center = [0.0, -1.0, -1.0]
 radius = 0.65
-material = 1
+material_id = 1
 
 [[primitive.sphere]]
 center = [1.0, 0.0, -1.0]
 radius = 0.65
-material = 1
+material_id = 2
 
 [[primitive.sphere]]
 center = [-1.0, 0.0, -1.0]
 radius = 0.65
-material = 1
+material_id = 2
 
 [[primitive.sphere]]
 center = [0.0, 0.0, -3.0]
 radius = 0.5
-material = 1
+material_id = 2
+
+[[material.lambertian]]
+id = 1
+albedo = [0.5, 0.5, 0.5]
+
+[[material.metal]]
+id = 2
+albedo = [0.5, 0.5, 0.5]

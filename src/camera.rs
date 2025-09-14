@@ -1,14 +1,17 @@
-use crate::color::*;
-use crate::prelude::*;
-use crate::samplers::*;
-
+use crate::math::{
+    constants::INFINITY,
+    types::{Point3, UnitVec3, Vec3},
+};
+use crate::{
+    color::Color, hittable::Hittable, ray::Ray, samplers::Sampler, samplers::SamplerConfig,
+    world::World,
+};
+use indicatif::{ParallelProgressIterator, ProgressIterator, ProgressStyle};
+use rayon::prelude::*;
 use std::{
     io::{self, Write},
     sync::Arc,
 };
-
-use indicatif::{ParallelProgressIterator, ProgressIterator, ProgressStyle};
-use rayon::prelude::*;
 
 #[allow(unused)]
 pub struct Camera {
@@ -94,16 +97,13 @@ impl Camera {
         }
 
         if let Some(record) = world.objects().hit(ray, (0.001, INFINITY).into()) {
-            /*
-            let mapped = record.normal.map(|e| (e + 1.0) / 2.0);
-            return Color(mapped);
-            */
-            /*
-            let direction = UnitVec3::random_on_hemisphere(&mut rand::rng(), record.normal);
-            */
-            let direction =
-                UnitVec3::new_normalize(*record.normal + *UnitVec3::random(&mut rand::rng()));
-            return Camera::ray_color(&Ray::new(record.hit_point, direction), world, ttl - 1) * 0.5;
+            let material = world.materials().get(record.material).expect("no material");
+
+            return if let Some((attenuation, scattered)) = material.scatter(ray, &record) {
+                attenuation * Camera::ray_color(&scattered, world, ttl - 1)
+            } else {
+                material.emitted(&record)
+            };
         }
 
         let mut t = ray.direction().y;

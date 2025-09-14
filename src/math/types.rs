@@ -1,10 +1,19 @@
 //! This module defines types.
 
 use crate::math::constants::INFINITY;
-
 use rand::Rng;
-
 use std::ops::{Deref, Neg};
+
+pub trait DVec3Extension {
+    fn near_zero(&self) -> bool;
+}
+
+impl DVec3Extension for glam::f64::DVec3 {
+    fn near_zero(&self) -> bool {
+        const S: f64 = 1e-8;
+        self.x.abs() < S && self.y.abs() < S && self.z.abs() < S
+    }
+}
 
 pub type Point3 = glam::f64::DVec3;
 pub type Vec3 = glam::f64::DVec3;
@@ -105,7 +114,7 @@ impl Interval {
 
     /// Clamps `x` to be within this interval.
     pub fn clamp(&self, x: f64) -> f64 {
-        f64::max(f64::min(x, self.1), self.0)
+        x.clamp(self.0, self.1)
     }
 }
 

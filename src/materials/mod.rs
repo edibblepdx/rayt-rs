@@ -1,29 +1,54 @@
 use crate::{color::Color, hittable::HitRecord, ray::Ray};
-
 use std::collections::HashMap;
 
-#[derive(Copy, Clone, serde::Deserialize, PartialEq, Eq, Hash)]
-pub struct MaterialId(u32);
+mod diffuse;
+mod lambertian;
+mod metal;
+mod normals;
 
-impl From<u32> for MaterialId {
-    fn from(id: u32) -> MaterialId {
-        MaterialId(id)
-    }
-}
+pub use diffuse::Diffuse;
+pub use lambertian::Lambertian;
+pub use metal::Metal;
+pub use normals::Normals;
+
+#[derive(Copy, Clone, PartialEq, Eq, Hash, Debug, serde::Deserialize)]
+pub struct MaterialId(pub u32);
+
+type DynMaterial = Box<dyn Material + Send + Sync>;
 
 #[derive(Default)]
-pub struct MaterialMap(HashMap<MaterialId, Box<dyn Material + Send + Sync>>);
+pub struct MaterialMap {
+    next_id: u32,
+    map: HashMap<MaterialId, DynMaterial>,
+}
 
 impl MaterialMap {
-    pub fn insert<K, V>(&mut self, k: K, v: V)
+    pub fn insert<M>(&mut self, material: M) -> MaterialId
     where
-        K: Into<MaterialId>,
-        V: Material + Send + Sync + 'static,
+        M: Material + Send + Sync + 'static,
     {
-        self.0.insert(k.into(), Box::new(v));
+        let id = MaterialId(self.next_id);
+        self.map.insert(id, Box::new(material));
+        self.next_id += 1;
+        id
+    }
+
+    pub fn get(&self, id: MaterialId) -> Option<&DynMaterial> {
+        self.map.get(&id)
     }
 }
 
 pub trait Material {
-    fn scatter(&self, ray: &Ray, attenuation: Color, scattered: &Ray) -> Option<HitRecord>;
+    fn scatter(&self, ray: &Ray, record: &HitRecord) -> Option<(Color, Ray)>;
+
+    fn emitted(&self, _record: &HitRecord) -> Color {
+        Color::BLACK
+    }
+}
+
+#[derive(serde::Deserialize)]
+pub struct TomlMaterial<M: Material> {
+    pub id: MaterialId,
+    #[serde(flatten)]
+    pub data: M,
 }
