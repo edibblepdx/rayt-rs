@@ -88,12 +88,12 @@ impl Camera {
         Ray::new(self.position, ray_direction)
     }
 
-    fn ray_color(ray: &Ray, world: &HittableList, ttl: i32) -> Color {
+    fn ray_color(ray: &Ray, world: &World, ttl: i32) -> Color {
         if ttl <= 0 {
             return Color::BLACK;
         }
 
-        if let Some(record) = world.hit(ray, (0.001, INFINITY).into()) {
+        if let Some(record) = world.objects().hit(ray, (0.001, INFINITY).into()) {
             /*
             let mapped = record.normal.map(|e| (e + 1.0) / 2.0);
             return Color(mapped);

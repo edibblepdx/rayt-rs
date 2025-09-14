@@ -17,10 +17,15 @@ pub struct Sphere {
 }
 
 impl Sphere {
-    pub fn new(center: impl Into<Point3>, radius: f64) -> Self {
+    pub fn new<P, M>(center: P, radius: f64, material: M) -> Self
+    where
+        P: Into<Point3>,
+        M: Into<MaterialId>,
+    {
         Sphere {
             center: center.into(),
             radius,
+            material: material.into(),
         }
     }
 }
@@ -56,7 +61,13 @@ impl Hittable for Sphere {
         let hit_point = ray.at(t);
         let outward_normal = UnitVec3::new_unchecked((hit_point - self.center) / self.radius);
 
-        Some(HitRecord::new(ray, t, hit_point, outward_normal))
+        Some(HitRecord::new(
+            ray,
+            t,
+            hit_point,
+            outward_normal,
+            self.material,
+        ))
     }
 }
 

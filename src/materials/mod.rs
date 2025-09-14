@@ -5,6 +5,12 @@ use std::collections::HashMap;
 #[derive(Copy, Clone, serde::Deserialize)]
 pub struct MaterialId(u32);
 
+impl From<u32> for MaterialId {
+    fn from(id: u32) -> MaterialId {
+        MaterialId(id)
+    }
+}
+
 #[derive(Default)]
 pub struct MaterialMap(HashMap<i32, Box<dyn Material + Send + Sync>>);
 
