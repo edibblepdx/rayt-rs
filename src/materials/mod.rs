@@ -1,5 +1,8 @@
 use crate::{color::Color, hittable::HitRecord, ray::Ray};
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    sync::atomic::{AtomicU32, Ordering},
+};
 
 mod diffuse;
 mod lambertian;
@@ -11,30 +14,28 @@ pub use lambertian::Lambertian;
 pub use metal::Metal;
 pub use normals::Normals;
 
+static COUNTER: AtomicU32 = AtomicU32::new(0);
+
 #[derive(Copy, Clone, PartialEq, Eq, Hash, Debug, serde::Deserialize)]
 pub struct MaterialId(pub u32);
 
 type DynMaterial = Box<dyn Material + Send + Sync>;
 
 #[derive(Default)]
-pub struct MaterialMap {
-    next_id: u32,
-    map: HashMap<MaterialId, DynMaterial>,
-}
+pub struct MaterialMap(HashMap<MaterialId, DynMaterial>);
 
 impl MaterialMap {
     pub fn insert<M>(&mut self, material: M) -> MaterialId
     where
         M: Material + Send + Sync + 'static,
     {
-        let id = MaterialId(self.next_id);
-        self.map.insert(id, Box::new(material));
-        self.next_id += 1;
+        let id = MaterialId(COUNTER.fetch_add(1, Ordering::Relaxed));
+        self.0.insert(id, Box::new(material));
         id
     }
 
     pub fn get(&self, id: MaterialId) -> Option<&DynMaterial> {
-        self.map.get(&id)
+        self.0.get(&id)
     }
 }
 
