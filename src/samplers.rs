@@ -1,3 +1,5 @@
+//! Samplers and configuration.
+
 use rand::Rng;
 
 pub trait Sampler {
@@ -8,8 +10,14 @@ pub trait Sampler {
 #[derive(serde::Deserialize, PartialEq)]
 #[serde(rename_all = "lowercase", tag = "type")]
 pub enum SamplerConfig {
+    /// Single sample pixel center.
     Single,
+    /// Randomly samples within a bounding box.
     Random { samples_per_pixel: usize },
+    /// Stratified sampler.
+    ///
+    /// Divides a bounding box into smaller sub-areas and randomly samples
+    /// once in each sub-area.
     Stratified { nx: usize, ny: usize },
 }
 
@@ -26,7 +34,7 @@ impl SamplerConfig {
 }
 
 /// Single sample pixel center.
-pub struct SingleSampler;
+struct SingleSampler;
 
 impl Sampler for SingleSampler {
     fn samples(&self, x: f64, y: f64) -> Box<dyn Iterator<Item = (f64, f64)>> {
@@ -39,7 +47,7 @@ impl Sampler for SingleSampler {
 }
 
 /// Randomly samples within a bounding box.
-pub struct RandomSampler {
+struct RandomSampler {
     samples_per_pixel: usize,
 }
 
@@ -62,7 +70,7 @@ impl Sampler for RandomSampler {
 ///
 /// Divides a bounding box into smaller sub-areas and randomly samples
 /// once in each sub-area.
-pub struct StratifiedSampler {
+struct StratifiedSampler {
     nx: usize,
     ny: usize,
 }

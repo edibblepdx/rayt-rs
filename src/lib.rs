@@ -8,6 +8,7 @@ pub mod samplers;
 pub mod scene_builder;
 pub mod world;
 
+/// Commonly used items.
 pub mod prelude {
     pub use crate::camera::Camera;
     pub use crate::color::Color;

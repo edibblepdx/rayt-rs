@@ -1,3 +1,5 @@
+//! Materials.
+
 use crate::{color::Color, hittable::HitRecord, ray::Ray};
 use std::{
     collections::HashMap,

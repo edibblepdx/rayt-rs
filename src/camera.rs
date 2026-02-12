@@ -1,3 +1,5 @@
+//! This module defines the Camera, which parameterizes the world.
+
 use crate::math::{
     constants::INFINITY,
     types::{Point3, UnitVec3, Vec3},
@@ -13,6 +15,7 @@ use std::{
     sync::Arc,
 };
 
+/// The camera parameterizes and renders the [`World`].
 #[allow(unused)]
 pub struct Camera {
     sampler: Box<dyn Sampler + Sync>,
@@ -123,6 +126,7 @@ impl Default for Camera {
     }
 }
 
+/// Created through [`Camera::builder`].
 #[derive(serde::Deserialize)]
 pub struct CameraBuilder {
     sampler: SamplerConfig,

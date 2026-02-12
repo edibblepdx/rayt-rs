@@ -1,10 +1,11 @@
-//! The world stores all scene objects and materials.
+//! This module defines the world, which stores all scene objects and materials.
 
 use crate::{
     hittable::{Hittable, HittableList},
     materials::{Material, MaterialId, MaterialMap},
 };
 
+/// The world contains all materials and objects.
 #[derive(Default)]
 pub struct World {
     /// The list of hittable objects in the world.
@@ -31,12 +32,12 @@ impl World {
     }
 
     /// Returns an immutable reference to hittable objects.
-    pub fn objects(&self) -> &HittableList {
+    pub(crate) fn objects(&self) -> &HittableList {
         &self.objects
     }
 
     /// Returns an immutable reference to materials.
-    pub fn materials(&self) -> &MaterialMap {
+    pub(crate) fn materials(&self) -> &MaterialMap {
         &self.materials
     }
 }

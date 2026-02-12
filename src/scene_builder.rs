@@ -1,3 +1,5 @@
+//! TOML scene builder.
+
 use crate::{camera::*, materials::*, math::primitives::*, world::World};
 use serde::Deserialize;
 use std::{collections::HashMap, fs, path::Path};
@@ -5,12 +7,12 @@ use std::{collections::HashMap, fs, path::Path};
 pub struct SceneBuilder;
 
 impl SceneBuilder {
-    pub fn build(path: impl AsRef<Path>) -> Result<(Camera, World), Error> {
+    pub fn build(path: impl AsRef<Path>) -> Result<(Camera, World), SceneError> {
         let toml_str =
-            fs::read_to_string(path).map_err(|err| Error::FileReadError(err.to_string()))?;
+            fs::read_to_string(path).map_err(|err| SceneError::FileReadError(err.to_string()))?;
 
         let config: Config = toml::from_str(&toml_str)
-            .map_err(|err| Error::ConfigDeError(err.message().to_string()))?;
+            .map_err(|err| SceneError::ConfigDeError(err.message().to_string()))?;
 
         let camera = config.camera.build();
         let mut world = World::default();
@@ -75,18 +77,18 @@ struct MaterialConfig {
 }
 
 #[derive(Debug)]
-pub enum Error {
+pub enum SceneError {
     FileReadError(String),
     ConfigDeError(String),
 }
 
-impl std::fmt::Display for Error {
+impl std::fmt::Display for SceneError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
         match self {
-            Error::FileReadError(s) => write!(f, "Config file read error: {s}"),
-            Error::ConfigDeError(s) => write!(f, "Config deserialization error: {s}"),
+            SceneError::FileReadError(s) => write!(f, "Config file read error: {s}"),
+            SceneError::ConfigDeError(s) => write!(f, "Config deserialization error: {s}"),
         }
     }
 }
 
-impl std::error::Error for Error {}
+impl std::error::Error for SceneError {}

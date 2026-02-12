@@ -1,3 +1,5 @@
+//! Color type, operations, and trait impls.
+
 use crate::math::types::{Interval, Vec3};
 use std::{
     fmt,

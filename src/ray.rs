@@ -1,3 +1,5 @@
+//! Rays.
+
 use crate::math::types::{Point3, UnitVec3};
 
 #[derive(Copy, Clone)]
