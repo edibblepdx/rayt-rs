@@ -14,26 +14,14 @@ fn main() {
     let material_left = world.add_material(Metal::new(Color::new(0.8, 0.8, 0.8)));
     let material_right = world.add_material(Metal::new(Color::new(0.8, 0.6, 0.2)));
 
-    world.add_object(Sphere::new(
-        Point3::new(0.0, -100.5, -1.0),
-        100.0,
-        material_ground,
-    ));
-    world.add_object(Sphere::new(
-        Point3::new(0.0, 0.0, -1.2),
-        0.5,
-        material_center,
-    ));
-    world.add_object(Sphere::new(
-        Point3::new(-1.0, 0.0, -1.0),
-        0.5,
-        material_left,
-    ));
-    world.add_object(Sphere::new(
-        Point3::new(1.0, 0.0, -1.0),
-        0.5,
-        material_right,
-    ));
+    [
+        Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0, material_ground),
+        Sphere::new(Point3::new(0.0, 0.0, -1.2), 0.5, material_center),
+        Sphere::new(Point3::new(-1.0, 0.0, -1.0), 0.5, material_left),
+        Sphere::new(Point3::new(1.0, 0.0, -1.0), 0.5, material_right),
+    ]
+    .iter()
+    .for_each(|&o| world.add_object(o));
 
     let camera = Camera::builder()
         .aspect_ratio(ASPECT_RATIO)

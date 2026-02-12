@@ -1,4 +1,49 @@
 //! TOML scene builder.
+//!
+//! # Example
+//!
+//! ```toml
+//! ## Create the camera.
+//! [camera]
+//! aspect_ratio = 1.777
+//! image_width = 800
+//! position = [0.0, 0.0, 0.0]
+//! look_at = [0.0, 0.0, -1.0]
+//! up = [0.0, 1.0, 0.0]
+//! max_depth = 50
+//!
+//! ## Choose a sampler.
+//! [camera.sampler]
+//! type = "stratified"
+//! nx = 20
+//! ny = 20
+//!
+//! ## Provide an array of primitives that each reference a material.
+//! [[primitive.sphere]]
+//! center = [0.0, -100.5, -1.0]
+//! radius = 100.0
+//! material_id = 1
+//!
+//! ## Provide an array of materials.
+//! [[material.lambertian]]
+//! id = 1
+//! albedo = [0.8, 0.8, 0.0]
+//! ```
+//! ```rust
+//! use rayt_rs::scene_builder::SceneBuilder;
+//!
+//! fn main() -> anyhow::Result<()> {
+//!     // Safety: just for logging
+//!     unsafe { std::env::set_var("RUST_LOG", "info") }
+//!     env_logger::init();
+//!
+//!     let (camera, world) = SceneBuilder::build("scene1.toml")?;
+//!
+//!     camera.render(world);
+//!
+//!     Ok(())
+//! }
+//! ```
 
 use crate::{camera::*, materials::*, math::primitives::*, world::World};
 use serde::Deserialize;
