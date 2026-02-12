@@ -17,7 +17,7 @@ pub use normals::Normals;
 static COUNTER: AtomicU32 = AtomicU32::new(0);
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash, Debug, serde::Deserialize)]
-pub struct MaterialId(pub u32);
+pub struct MaterialId(pub(crate) u32);
 
 type DynMaterial = Box<dyn Material + Send + Sync>;
 

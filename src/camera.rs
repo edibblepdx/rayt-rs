@@ -137,7 +137,8 @@ pub struct CameraBuilder {
 impl CameraBuilder {
     pub fn build(self) -> Camera {
         // Camera basis.
-        let forward = UnitVec3::new_normalize(self.look_at - self.position);
+        let position = self.position;
+        let forward = UnitVec3::new_normalize(self.look_at - position);
         let right = UnitVec3::new_normalize(forward.cross(self.up));
         let up = UnitVec3::new_normalize(right.cross(*forward));
 
@@ -161,7 +162,7 @@ impl CameraBuilder {
 
         // Position of upper left pixel.
         let viewport_upper_left =
-            self.position - Vec3::new(viewport_width / 2.0, -viewport_height / 2.0, focal_length);
+            position - Vec3::new(viewport_width / 2.0, -viewport_height / 2.0, focal_length);
         let pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
         // Sampler.
@@ -171,7 +172,7 @@ impl CameraBuilder {
             sampler,
             image_width,
             image_height,
-            position: self.position,
+            position,
             pixel00_loc,
             pixel_delta_u,
             pixel_delta_v,

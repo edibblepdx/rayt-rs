@@ -5,7 +5,7 @@ use std::{
 };
 
 #[derive(Copy, Clone, PartialEq, serde::Deserialize)]
-pub struct Color(pub Vec3);
+pub struct Color(pub(crate) Vec3);
 
 impl Color {
     pub const BLACK: Color = Color(Vec3::splat(0.0));

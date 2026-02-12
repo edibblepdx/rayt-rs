@@ -1,5 +1,6 @@
+#scene1.toml
 [camera]
-aspect_ratio = 1.0
+aspect_ratio = 1.777
 image_width = 800
 position = [0.0, 0.0, 0.0]
 look_at = [0.0, 0.0, -1.0]
@@ -8,38 +9,41 @@ max_depth = 50
 
 [camera.sampler]
 type = "stratified"
-nx = 5
-ny = 5
+nx = 20
+ny = 20
 
 [[primitive.sphere]]
-center = [0.0, 1.0, -1.0]
-radius = 0.65
+center = [0.0, -100.5, -1.0]
+radius = 100.0
 material_id = 1
 
 [[primitive.sphere]]
-center = [0.0, -1.0, -1.0]
-radius = 0.65
-material_id = 1
-
-[[primitive.sphere]]
-center = [1.0, 0.0, -1.0]
-radius = 0.65
+center = [0.0, 0.0, -1.2]
+radius = 0.5
 material_id = 2
 
 [[primitive.sphere]]
 center = [-1.0, 0.0, -1.0]
-radius = 0.65
-material_id = 2
+radius = 0.5
+material_id = 3
 
 [[primitive.sphere]]
-center = [0.0, 0.0, -3.0]
+center = [1.0, 0.0, -1.0]
 radius = 0.5
-material_id = 2
+material_id = 4
 
 [[material.lambertian]]
 id = 1
-albedo = [0.5, 0.5, 0.5]
+albedo = [0.8, 0.8, 0.0]
+
+[[material.lambertian]]
+id = 2
+albedo = [0.1, 0.2, 0.5]
 
 [[material.metal]]
-id = 2
-albedo = [0.5, 0.5, 0.5]
+id = 3
+albedo = [0.8, 0.8, 0.8]
+
+[[material.metal]]
+id = 4
+albedo = [0.8, 0.6, 0.2]

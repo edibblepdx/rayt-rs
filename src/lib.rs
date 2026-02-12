@@ -15,10 +15,7 @@ pub mod prelude {
     pub use crate::materials::Lambertian;
     pub use crate::materials::Metal;
     pub use crate::materials::Normals;
-    pub use crate::math::constants::INFINITY;
-    pub use crate::math::constants::PI;
     pub use crate::math::primitives::Sphere;
-    pub use crate::math::types::Interval;
     pub use crate::math::types::Point3;
     pub use crate::math::types::UnitVec3;
     pub use crate::math::types::Vec3;
