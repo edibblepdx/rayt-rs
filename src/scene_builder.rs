@@ -31,12 +31,12 @@ impl SceneBuilder {
         macro_rules! primitive {
             ($x:expr) => {
                 if let Some(ps) = $x {
-                    for p in ps {
-                        if let Some(&real_id) = real_ids.get(&p.material_id()) {
-                            let p = p.with_material_id(real_id);
+                    for mut p in ps {
+                        if let Some(&real_id) = real_ids.get(&p.material_id) {
+                            p.material_id = real_id;
                             world.add_object(p);
                         } else {
-                            panic!("no material: {:?}", p.material_id());
+                            panic!("no material: {:?}", p.material_id);
                         }
                     }
                 }
